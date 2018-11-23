@@ -5,6 +5,7 @@ import SignIn from "../Screens/SignIn";
 import Logout from "../Components/Logout";
 import { connect } from "react-redux";
 import { updateUser } from "../Config/Redux/Actions/authActions";
+import { Grid, Paper } from "@material-ui/core";
 
 class App extends Component {
   constructor(props) {
@@ -32,8 +33,23 @@ class App extends Component {
             </div>
           ) : (
               <div>
-                <SignUp />
-                <SignIn />
+                <Grid
+                  container
+                  direction="row"
+                  justify="center"
+                  alignItems="center"
+                >
+                  <Paper >
+                    <Grid item xs={10} md={10}>
+                      <SignUp />
+                    </Grid>
+                  </Paper>
+                  <Paper>
+                    <Grid item xs={10} md={10}>
+                      <SignIn />
+                    </Grid>
+                  </Paper>
+                </Grid>
               </div>
             )
         }

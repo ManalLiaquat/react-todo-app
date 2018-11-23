@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import firebase from "../../Config/Firebase";
+import { TextField, Button, Typography } from "@material-ui/core";
 
 class SignUp extends Component {
   constructor(props) {
@@ -29,10 +30,10 @@ class SignUp extends Component {
   render() {
     return (
       <div>
-        <h3>Sign Up</h3>
-        <input type="text" placeholder="Email" onChange={e => { this.setState({ email: e.target.value }) }} />
-        <input type="text" placeholder="Password" onChange={e => { this.setState({ pass: e.target.value }) }} />
-        <button onClick={this.signUp}>Sign Up</button>
+        <Typography variant="overline">Sign Up</Typography>
+        <TextField placeholder="Email" onChange={e => { this.setState({ email: e.target.value }) }} />
+        <TextField placeholder="Password" onChange={e => { this.setState({ pass: e.target.value }) }} />
+        <Button variant="contained" color="secondary" onClick={this.signUp}>Sign Up</Button>
       </div>
     );
   }

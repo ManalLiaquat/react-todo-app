@@ -37,8 +37,12 @@ class Todo extends Component {
 		} else {
 			todos.push(text);
 		}
-		this.setState({ todos, text: "" });
-		DB.child(`todos/${user.uid}`).set(todos)
+		if (text.length > 0) {
+			this.setState({ todos, text: "" });
+			DB.child(`todos/${user.uid}`).set(todos)
+		} else {
+			alert('PLease enter something')
+		}
 	}
 
 	updateTodo() {

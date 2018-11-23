@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import firebase from "../../Config/Firebase";
 import { connect } from "react-redux";
 import { updateUser } from "../../Config/Redux/Actions/authActions";
+import { TextField, Button, Typography } from "@material-ui/core";
 
 class SignIn extends Component {
   constructor(props) {
@@ -29,10 +30,10 @@ class SignIn extends Component {
   render() {
     return (
       <div >
-        <h3>Sign In</h3>
-        <input type="text" placeholder="Email" onChange={e => { this.setState({ email: e.target.value }) }} />
-        <input type="text" placeholder="Password" onChange={e => { this.setState({ pass: e.target.value }) }} />
-        <button onClick={this.SignIn}>Sign In</button>
+        <Typography variant="overline">Sign In</Typography>
+        <TextField placeholder="Email" onChange={e => { this.setState({ email: e.target.value }) }} />
+        <TextField placeholder="Password" onChange={e => { this.setState({ pass: e.target.value }) }} />
+        <Button variant="contained" color="primary" onClick={this.SignIn}>Sign In</Button>
       </div>
     );
   }
