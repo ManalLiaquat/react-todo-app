@@ -6,6 +6,14 @@ import Logout from "../Components/Logout";
 import { connect } from "react-redux";
 import { updateUser } from "../Config/Redux/Actions/authActions";
 import { Grid, Paper } from "@material-ui/core";
+import { withStyles } from "@material-ui/core/styles";
+
+const styles = theme => ({
+  papers: {
+    margin: "20px",
+    padding: "20px"
+  },
+})
 
 class App extends Component {
   constructor(props) {
@@ -22,6 +30,7 @@ class App extends Component {
 
   render() {
     let { user } = this.state
+    let { classes } = this.props
     return (
       <div >
         {
@@ -39,12 +48,12 @@ class App extends Component {
                   justify="center"
                   alignItems="center"
                 >
-                  <Paper >
+                  <Paper className={classes.papers}>
                     <Grid item xs={10} md={10}>
                       <SignUp />
                     </Grid>
                   </Paper>
-                  <Paper>
+                  <Paper className={classes.papers}>
                     <Grid item xs={10} md={10}>
                       <SignIn />
                     </Grid>
@@ -72,4 +81,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(App));

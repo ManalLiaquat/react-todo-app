@@ -22,7 +22,6 @@ class Todo extends Component {
 
 	}
 
-
 	updateText(e) {
 		this.setState({
 			text: e.target.value

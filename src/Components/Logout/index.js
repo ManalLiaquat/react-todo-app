@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import firebase from "../../Config/Firebase";
 import { connect } from "react-redux";
 import { removeUser } from "../../Config/Redux/Actions/authActions";
-import { Button, withStyles } from "@material-ui/core";
+import { Button } from "@material-ui/core";
+import { withStyles } from "@material-ui/core/styles";
 
 const styles = theme => ({
   btn: {
