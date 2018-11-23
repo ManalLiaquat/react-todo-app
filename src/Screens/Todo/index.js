@@ -1,8 +1,12 @@
 import React, { Component } from "react";
 import firebase from "../../Config/Firebase";
+import { connect } from "react-redux";
+import { updateUser } from "../../Config/Redux/Actions/authActions";
+import { Button, Grid, TextField, List, ListItem, ListItemText, ListItemSecondaryAction } from "@material-ui/core";
+
 const DB = firebase.database().ref('/')
 
-export default class Todo extends Component {
+class Todo extends Component {
 	constructor(props) {
 		super(props)
 		this.state = {
@@ -15,7 +19,9 @@ export default class Todo extends Component {
 		this.cancel = this.cancel.bind(this);
 		this.updateTodo = this.updateTodo.bind(this);
 		this.getTodos = this.getTodos.bind(this);
+
 	}
+
 
 	updateText(e) {
 		this.setState({
@@ -24,29 +30,34 @@ export default class Todo extends Component {
 	}
 
 	add() {
-		const { text, todos } = this.state;
-		todos.push(text);
+		let { text, todos, user } = this.state;
+		if (!todos) {
+			todos = []
+			todos.push(text);
+		} else {
+			todos.push(text);
+		}
 		this.setState({ todos, text: "" });
-		DB.child('todos').set(todos)
+		DB.child(`todos/${user.uid}`).set(todos)
 	}
 
 	updateTodo() {
-		const { todos, text, currentIndex } = this.state;
+		let { todos, text, currentIndex, user } = this.state;
 		todos[currentIndex] = text;
 		this.setState({ todos, text: "", currentIndex: null });
-		DB.child('todos').set(todos)
+		DB.child(`todos/${user.uid}`).set(todos)
 	}
 
 	edit(index) {
-		const { todos } = this.state;
+		let { todos } = this.state;
 		this.setState({ text: todos[index], currentIndex: index });
 	}
 
 	delete(index) {
-		const { todos } = this.state;
+		let { todos, user } = this.state;
 		todos.splice(index, 1);
 		this.setState({ todos, currentIndex: null });
-		DB.child('todos').set(todos)
+		DB.child(`todos/${user.uid}`).set(todos)
 	}
 
 	cancel() {
@@ -54,27 +65,35 @@ export default class Todo extends Component {
 	}
 
 	renderTodos() {
-		const { todos } = this.state;
+		let { todos } = this.state;
 		return (
-			<ol>
-				{todos.map((item, index) => {
+			<List>
+				{todos && todos.map((item, index) => {
 					return (
-						<li key={`${item}_${index}`}>
-							{item}
-							<button onClick={this.edit.bind(this, index)}>Edit</button>
-							<button onClick={this.delete.bind(this, index)}>Delete</button>
-						</li>
+						<ListItem key={`${item}_${index}`} button>
+							<ListItemText inset primary={item} />
+							<ListItemSecondaryAction>
+								<Button size="small" variant="contained" color="primary" onClick={this.edit.bind(this, index)}>Edit</Button>
+								<Button size="small" variant="contained" color="secondary" onClick={this.delete.bind(this, index)}>Delete</Button>
+							</ListItemSecondaryAction>
+						</ListItem>
+
 					);
 				})}
-			</ol>
+			</List>
 		);
 	}
 
 	getTodos() {
-		DB.child('todos').on("value", data => {
-			console.log(data.val());
+		let { user } = this.state
+		DB.child(`todos/${user.uid}`).on("value", data => {
+			// console.log(data.val());
 			this.setState({ todos: data.val() })
 		})
+	}
+
+	static getDerivedStateFromProps(props) {
+		return { user: props.user }
 	}
 
 	componentDidMount() {
@@ -83,32 +102,73 @@ export default class Todo extends Component {
 
 
 	render() {
-		const { currentIndex } = this.state;
+		let { currentIndex } = this.state;
 		return (
 			<div>
 				<div style={{ marginBottom: "50px" }}>
-					<hr />
-					<input
-						type="text"
-						placeholder="Enter something"
-						onChange={this.updateText}
-						value={this.state.text}
-					/>
-					{currentIndex == null ? (
-						<button onClick={this.add}>Add</button>
-					) : (
-							<span>
-								<button onClick={this.updateTodo}>Update</button>
-								<button onClick={this.cancel}>Cancel</button>
-							</span>
-						)}
-					<hr />
+
+					<Grid
+						container
+						direction="row"
+						justify="center"
+						alignItems="center"
+					>
+						<Grid item xs={10} md={8}>
+							<TextField
+								style={{ margin: 8 }}
+								fullWidth
+								margin="normal"
+								InputLabelProps={{
+									shrink: true,
+								}}
+								placeholder="Enter something"
+								autoFocus={true}
+								onChange={this.updateText}
+								value={this.state.text}
+							/>
+							{currentIndex == null ? (
+								<Button size="large" variant="contained" color="primary" onClick={this.add}>Add</Button>
+							) : (
+									<span>
+										<Button size="small" variant="contained" color="primary" onClick={this.updateTodo}>Update</Button>
+										<Button size="small" variant="contained" color="secondary" onClick={this.cancel}>Cancel</Button>
+									</span>
+								)}
+						</Grid>
+					</Grid>
+
+
 					{currentIndex != null && (
 						<p>You are editing item # {currentIndex + 1} currently</p>
 					)}
-					{this.renderTodos()}
+					<Grid
+						container
+						direction="row"
+						justify="center"
+						alignItems="center"
+					>
+						<Grid item xs={10} md={8}>
+							{this.renderTodos()}
+						</Grid>
+					</Grid>
 				</div>
 			</div>
 		)
 	}
 }
+
+let mapStateToProps = state => {
+	// console.log("state from component", state);
+	return {
+		user: state.authReducers.user
+	};
+};
+
+let mapDispatchToProps = dispatch => {
+	// console.log("dispatch from component", dispatch);
+	return {
+		updateUser: user => dispatch(updateUser(user))
+	};
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Todo);
